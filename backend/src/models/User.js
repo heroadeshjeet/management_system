@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    identifier: {
+    fileNumber: {
       type: String,
-      required: [true, 'Identifier is required (File Number / Teacher ID / Admin)'],
+      required: [true, 'File Number is required'],
       unique: true,
       trim: true,
     },
@@ -13,23 +13,27 @@ const userSchema = new mongoose.Schema(
       required: [true, 'User name is required'],
       trim: true,
     },
+    password: {
+      type: String,
+      default: '123',
+    },
     role: {
       type: String,
-      required: true,
+      required: [true, 'Role is required'],
       enum: ['admin', 'teacher', 'student'],
       default: 'student',
     },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
-    },
-    department: {
-      type: String,
-      default: 'Computer Science & Engineering',
+    points: {
+      type: Number,
+      default: 500,
     },
     block: {
       type: String,
       default: 'Abdul Kalam Block',
+    },
+    department: {
+      type: String,
+      default: 'Computer Science & Engineering',
     },
     avatar: {
       type: String,
@@ -49,4 +53,13 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Virtual field to ensure both fileNumber and identifier can be used seamlessly across frontend and backend
+userSchema.virtual('identifier').get(function () {
+  return this.fileNumber;
+});
+
+userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: true });
+
 export const User = mongoose.model('User', userSchema);
+export default User;
