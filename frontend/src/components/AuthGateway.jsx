@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { sfx } from '../utils/soundEffects';
 
 export const AuthGateway = () => {
-  const { login, mockAccounts, activeBlock } = useAuth();
+  const { login, activeBlock } = useAuth();
   const { isAmoled } = useTheme();
 
   const [identifier, setIdentifier] = useState('');
@@ -41,13 +41,6 @@ export const AuthGateway = () => {
   const triggerShake = () => {
     setShake(true);
     setTimeout(() => setShake(false), 500);
-  };
-
-  const fillMock = (account) => {
-    sfx.playClick();
-    setIdentifier(account.identifier);
-    setPassword(account.password);
-    setErrorMessage('');
   };
 
   return (
@@ -169,42 +162,12 @@ export const AuthGateway = () => {
           </button>
         </form>
 
-        {/* Phase 1 Quick Fill Demo Credentials */}
-        <div className="mt-7 pt-5 border-t border-current/10">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>Phase 1 Quick-Fill Mocks</span>
-            </span>
-            <span className="text-[10px] text-slate-400">Click to autofill</span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            {mockAccounts.map((acc) => (
-              <button
-                key={acc.identifier}
-                type="button"
-                onClick={() => fillMock(acc)}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-all ${
-                  isAmoled
-                    ? 'bg-neutral-900/60 border-white/10 hover:border-brand-cyan/60 hover:bg-neutral-800 text-slate-200'
-                    : 'bg-slate-100/90 border-slate-200 hover:border-brand-indigo/60 hover:bg-slate-200/80 text-slate-800'
-                }`}
-              >
-                <span className="capitalize text-brand-cyan text-[11px] font-bold">
-                  {acc.role}
-                </span>
-                <span className="text-[10px] text-slate-400 mt-0.5">
-                  ID: {acc.identifier}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-3 text-[11px] text-center text-slate-500">
-            Admin: <code className="font-mono text-slate-400">Admin / Aryabhatta@2000</code> | Faculty/Student password: <code className="font-mono text-slate-400">123</code>
-          </div>
+        {/* Institutional Identity Footer Notice */}
+        <div className="mt-6 pt-4 border-t border-current/10 flex items-center justify-center gap-2 text-[11px] text-slate-500">
+          <Shield className="w-3.5 h-3.5 text-brand-cyan shrink-0" />
+          <span>Secured by Aryabhatta Central Identity & MongoDB Session Store</span>
         </div>
+
 
         {/* Creator Credit Footer */}
         <div className="mt-6 text-center text-xs text-slate-400/80">

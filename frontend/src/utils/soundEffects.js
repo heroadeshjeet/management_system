@@ -1,8 +1,4 @@
-/**
- * Web Audio API Sound Effects Engine
- * Generates futuristic electronic tones, intro arpeggios, and interface audio feedback
- * without requiring external audio files.
- */
+import { haptics } from './haptics';
 
 class SoundEffectsEngine {
   constructor() {
@@ -115,6 +111,7 @@ class SoundEffectsEngine {
    * Subtle UI click sound for buttons and tabs
    */
   playClick() {
+    haptics.tap(20);
     if (this.isMuted) return;
     const ctx = this.getAudioContext();
     if (!ctx) return;
@@ -141,6 +138,7 @@ class SoundEffectsEngine {
    * Success chime on valid login
    */
   playSuccess() {
+    haptics.success();
     if (this.isMuted) return;
     const ctx = this.getAudioContext();
     if (!ctx) return;
@@ -170,6 +168,7 @@ class SoundEffectsEngine {
    * Error warning sound on invalid login
    */
   playError() {
+    haptics.error();
     if (this.isMuted) return;
     const ctx = this.getAudioContext();
     if (!ctx) return;

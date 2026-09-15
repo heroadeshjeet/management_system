@@ -3,8 +3,23 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
 
+// Register PWA Service Worker
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => {
+        console.log('✅ [PWA Service Worker Registered]: Scope ->', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('⚠️ [PWA Service Worker Registration Failed]:', err);
+      });
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+

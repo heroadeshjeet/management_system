@@ -47,8 +47,9 @@ export const Navbar = ({ onReplaySplash }) => {
                 Aryabhatta Group
               </span>
               <span className="hidden md:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
-                Phase 5
+                Phase 7
               </span>
+
             </div>
 
             {/* Active Block Indicator */}
