@@ -2,56 +2,69 @@ import { User } from '../models/User.js';
 import { recordAuditLog } from '../middleware/auditLogger.js';
 
 /**
- * Seed initial baseline users if database User collection is empty
+ * Seed initial baseline users if missing
+ * Guarantees master Admin (ID: Admin, Pass: Aryabhatta@2000), default teacher, and student exist
  */
 export const seedInitialUsers = async () => {
   try {
-    const count = await User.countDocuments();
-    if (count === 0) {
-      console.log('🌱 [Database Seed]: No users found. Seeding default accounts for Abdul Kalam Block...');
-      const defaultUsers = [
-        {
-          fileNumber: 'Admin',
-          name: 'Dr. Suresh Chandra',
-          password: 'Aryabhatta@2000',
-          role: 'admin',
-          points: 500,
-          block: 'Abdul Kalam Block',
-          department: 'Central Academic Directorate',
-        },
-        {
-          fileNumber: 'T101',
-          name: 'Prof. Rajesh Sharma',
-          password: '123',
-          role: 'teacher',
-          points: 500,
-          block: 'Abdul Kalam Block',
-          department: 'Department of Computer Science & Engineering',
-        },
-        {
-          fileNumber: '241342',
-          name: 'Aman Kumar Verma',
-          password: '123',
-          role: 'student',
-          points: 500,
-          block: 'Abdul Kalam Block',
-          department: 'B.Tech - Computer Science (Section A)',
-        },
-      ];
+    const adminExists = await User.findOne({
+      fileNumber: { $regex: /^admin$/i },
+    });
 
-      await User.insertMany(defaultUsers);
-      console.log('✅ [Database Seed]: Baseline accounts successfully initialized in MongoDB.');
+    if (!adminExists) {
+      console.log('🌱 [Database Seed]: Admin account missing. Initializing master Admin account...');
+      await User.create({
+        fileNumber: 'Admin',
+        name: 'Dr. Suresh Chandra',
+        password: 'Aryabhatta@2000',
+        role: 'admin',
+        points: 500,
+        block: 'Abdul Kalam Block',
+        department: 'Central Academic Directorate',
+      });
+      console.log('✅ [Database Seed]: Master Admin (ID: Admin / Pass: Aryabhatta@2000) initialized in MongoDB.');
 
-      // Record seed action in Blackbox
       await recordAuditLog({
         actorName: 'System Seeder',
         role: 'system',
-        action: 'SYSTEM_BOOTSTRAP',
-        details: 'Initial Admin, Teacher (T101), and Student (241342) records seeded.',
+        action: 'ADMIN_BOOTSTRAP',
+        details: 'Master Admin account initialized.',
+      });
+    }
+
+    const teacherExists = await User.findOne({
+      fileNumber: { $regex: /^T101$/i },
+    });
+
+    if (!teacherExists) {
+      await User.create({
+        fileNumber: 'T101',
+        name: 'Prof. Rajesh Sharma',
+        password: '123',
+        role: 'teacher',
+        points: 500,
+        block: 'Abdul Kalam Block',
+        department: 'Department of Computer Science & Engineering',
+      });
+    }
+
+    const studentExists = await User.findOne({
+      fileNumber: { $regex: /^241342$/i },
+    });
+
+    if (!studentExists) {
+      await User.create({
+        fileNumber: '241342',
+        name: 'Aman Kumar Verma',
+        password: '123',
+        role: 'student',
+        points: 500,
+        block: 'Abdul Kalam Block',
+        department: 'B.Tech - Computer Science (Section A)',
       });
     }
   } catch (err) {
-    console.error('⚠️ [Seed Error]: Failed to seed initial users:', err.message);
+    console.error('⚠️ [Seed Error]: Failed to ensure baseline users:', err.message);
   }
 };
 

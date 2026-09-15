@@ -12,6 +12,12 @@ import studentRoutes from './routes/studentRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import testRoutes from './routes/testRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();
@@ -66,26 +72,40 @@ app.get('/api/db-status', (req, res) => {
   });
 });
 
-// Root route
-app.get('/', (req, res) => {
-  res.send({
-    message: 'Aryabhatta Group of Institutes Management API - Abdul Kalam Block',
-    phase: 'Phase 5 Test Evaluation Engine & Dynamic Logos',
-    endpoints: {
-      health: '/api/health',
-      dbStatus: '/api/db-status',
-      login: 'POST /api/auth/login',
-      teachers: 'GET/POST/DELETE /api/admin/teachers',
-      blackboxLogs: 'GET /api/blackbox/logs',
-      classes: 'GET/POST /api/classes',
-      studentBulkImport: 'POST /api/students/bulk-import',
-      studentPoints: 'PATCH /api/students/:id/points',
-      attendance: 'POST /api/attendance & GET /api/attendance/:classId/:date',
-      notifications: 'POST /api/notifications/send & GET /api/notifications',
-      tests: 'POST /api/tests/marks & GET /api/tests/marks/:notificationId',
-    },
+// Resolve frontend build directory if present (production / unified Render deployment)
+const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+
+if (fs.existsSync(frontendDist)) {
+  console.log(`📦 [Static Assets]: Serving frontend SPA from ${frontendDist}`);
+  app.use(express.static(frontendDist));
+  // Serve index.html for non-API GET routes (Single Page Application fallback)
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(frontendDist, 'index.html'));
+    }
   });
-});
+} else {
+  // Root route fallback when frontend dist is not built
+  app.get('/', (req, res) => {
+    res.send({
+      message: 'Aryabhatta Group of Institutes Management API - Abdul Kalam Block',
+      phase: 'Phase 7 Production Lockdown',
+      endpoints: {
+        health: '/api/health',
+        dbStatus: '/api/db-status',
+        login: 'POST /api/auth/login',
+        teachers: 'GET/POST/DELETE /api/admin/teachers',
+        blackboxLogs: 'GET /api/blackbox/logs',
+        classes: 'GET/POST /api/classes',
+        studentBulkImport: 'POST /api/students/bulk-import',
+        studentPoints: 'PATCH /api/students/:id/points',
+        attendance: 'POST /api/attendance & GET /api/attendance/:classId/:date',
+        notifications: 'POST /api/notifications/send & GET /api/notifications',
+        tests: 'POST /api/tests/marks & GET /api/tests/marks/:notificationId',
+      },
+    });
+  });
+}
 
 // Start server & initialize MongoDB connection
 const startServer = async () => {

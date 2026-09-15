@@ -11,21 +11,19 @@ export const Navbar = ({ onReplaySplash }) => {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-colors duration-300 border-b ${
-        isAmoled
+      className={`sticky top-0 z-40 w-full transition-colors duration-300 border-b ${isAmoled
           ? 'bg-black/80 backdrop-blur-xl border-white/10 text-white shadow-2xl'
           : 'bg-white/85 backdrop-blur-xl border-slate-200/80 text-slate-900 shadow-sm'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left: Brand & Block Badge */}
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <div
-            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl p-1 flex items-center justify-center border transition-all overflow-hidden shrink-0 ${
-              isAmoled
+            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl p-1 flex items-center justify-center border transition-all overflow-hidden shrink-0 ${isAmoled
                 ? 'bg-neutral-950 border-brand-cyan/30 text-brand-cyan shadow-neon-cyan/20'
                 : 'bg-indigo-50 border-indigo-200 text-brand-indigo'
-            }`}
+              }`}
           >
             <img
               src={isAmoled || theme === 'dark' ? '/logo_dark.png' : '/logo_light.png'}
@@ -44,10 +42,10 @@ export const Navbar = ({ onReplaySplash }) => {
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="font-extrabold text-xs sm:text-base tracking-tight truncate">
-                Aryabhatta Group
+                Aryabhatta Group of
               </span>
               <span className="hidden md:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
-                Phase 7
+                Institutes
               </span>
             </div>
 
@@ -68,11 +66,10 @@ export const Navbar = ({ onReplaySplash }) => {
           <button
             onClick={onReplaySplash}
             title="Replay Animated Intro Screen"
-            className={`p-1.5 sm:p-2 rounded-full border transition-colors ${
-              isAmoled
+            className={`p-1.5 sm:p-2 rounded-full border transition-colors ${isAmoled
                 ? 'border-white/10 hover:bg-white/10 text-slate-300'
                 : 'border-slate-200 hover:bg-slate-100 text-slate-700'
-            }`}
+              }`}
           >
             <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -94,13 +91,12 @@ export const Navbar = ({ onReplaySplash }) => {
               </div>
 
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center border text-xs font-bold uppercase ${
-                  user.role === 'admin'
+                className={`w-8 h-8 rounded-full flex items-center justify-center border text-xs font-bold uppercase ${user.role === 'admin'
                     ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
                     : user.role === 'teacher'
-                    ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                    : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                }`}
+                      ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                      : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                  }`}
               >
                 {user.name.charAt(0)}
               </div>
@@ -108,11 +104,10 @@ export const Navbar = ({ onReplaySplash }) => {
               <button
                 onClick={logout}
                 title="Log out of session"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                  isAmoled
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${isAmoled
                     ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'
                     : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
-                }`}
+                  }`}
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Logout</span>
