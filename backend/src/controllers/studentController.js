@@ -186,4 +186,83 @@ export const getStudents = async (req, res) => {
   }
 };
 
-export default { bulkImportStudents, getStudents };
+/**
+ * PATCH /api/students/:id/points
+ * Increment or decrement a student's behavioral points
+ */
+export const updateStudentPoints = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { delta, reason } = req.body;
+
+    if (delta === undefined || isNaN(Number(delta))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Numeric delta value is required for point adjustment.',
+      });
+    }
+
+    const deltaNum = Number(delta);
+
+    // Find student by ObjectId or fileNumber
+    let student = null;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      student = await User.findById(id);
+    }
+    if (!student) {
+      student = await User.findOne({ fileNumber: id, role: 'student' });
+    }
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found.',
+      });
+    }
+
+    const previousPoints = student.points !== undefined ? student.points : 500;
+    const newPoints = Math.max(0, previousPoints + deltaNum);
+    student.points = newPoints;
+    await student.save();
+
+    // Log to Blackbox audit trail
+    req.auditLogged = true;
+    const actorIdentifier = req.headers['x-actor-name'] || 'Teacher';
+    const actionDesc =
+      deltaNum >= 0
+        ? `awarded ${deltaNum} points to`
+        : `deducted ${Math.abs(deltaNum)} points from`;
+
+    const logDetails = `Teacher ${actorIdentifier} ${actionDesc} FileNumber ${student.fileNumber} (${student.name})${
+      reason ? ` Reason: "${reason}"` : ''
+    }. Balance: ${previousPoints} -> ${newPoints}`;
+
+    await recordAuditLog({
+      actorName: actorIdentifier,
+      role: 'teacher',
+      action: 'POINT_ADJUSTMENT',
+      details: logDetails,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Points for ${student.name} updated: ${previousPoints} -> ${newPoints}`,
+      points: newPoints,
+      student: {
+        _id: student._id,
+        fileNumber: student.fileNumber,
+        name: student.name,
+        points: newPoints,
+      },
+    });
+  } catch (error) {
+    console.error('❌ [updateStudentPoints Error]:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update student points.',
+      error: error.message,
+    });
+  }
+};
+
+export default { bulkImportStudents, getStudents, updateStudentPoints };

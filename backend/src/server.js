@@ -9,6 +9,8 @@ import adminRoutes from './routes/adminRoutes.js';
 import blackboxRoutes from './routes/blackboxRoutes.js';
 import classRoutes from './routes/classRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
+import attendanceRoutes from './routes/attendanceRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -20,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-actor-name', 'x-actor-role'],
   })
 );
@@ -35,6 +37,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/blackbox', blackboxRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health Check & System Status Endpoint
 app.get('/api/health', (req, res) => {
@@ -43,7 +47,7 @@ app.get('/api/health', (req, res) => {
     status: 'online',
     system: 'Aryabhatta Group of Institutes Management System',
     block: 'Abdul Kalam Block',
-    phase: 'Phase 3 Class Management & Excel Import Engine',
+    phase: 'Phase 4 Teacher Portal & Attendance System',
     author: 'Adeshjeet_Official',
     timestamp: new Date().toISOString(),
     database: dbStatus,
@@ -64,7 +68,7 @@ app.get('/api/db-status', (req, res) => {
 app.get('/', (req, res) => {
   res.send({
     message: 'Aryabhatta Group of Institutes Management API - Abdul Kalam Block',
-    phase: 'Phase 3 Class Management & Excel Import Engine',
+    phase: 'Phase 4 Teacher Portal & Attendance System',
     endpoints: {
       health: '/api/health',
       dbStatus: '/api/db-status',
@@ -73,6 +77,9 @@ app.get('/', (req, res) => {
       blackboxLogs: 'GET /api/blackbox/logs',
       classes: 'GET/POST /api/classes',
       studentBulkImport: 'POST /api/students/bulk-import',
+      studentPoints: 'PATCH /api/students/:id/points',
+      attendance: 'POST /api/attendance & GET /api/attendance/:classId/:date',
+      notifications: 'POST /api/notifications/send & GET /api/notifications',
     },
   });
 });
@@ -89,7 +96,7 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`🚀 [Server Running]: http://localhost:${PORT}`);
     console.log(`🏛️  [Block Association]: Abdul Kalam Block`);
-    console.log(`📡 [API Surface]: Auth, Admin, Blackbox, Classes, Student Bulk Import`);
+    console.log(`📡 [API Surface]: Auth, Admin, Blackbox, Classes, Students, Attendance, Notifications`);
     console.log(`🩺 [Health Check]: http://localhost:${PORT}/api/health`);
   });
 };

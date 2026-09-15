@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   BookOpen,
   Calendar,
@@ -10,19 +10,53 @@ import {
   ClipboardCheck,
   ArrowUpRight,
   GraduationCap,
-  FileSpreadsheet,
+  Bell,
+  Send,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
 import { ClassManagement } from '../classes/ClassManagement';
+import { AttendanceGrid } from '../teacher/AttendanceGrid';
+import { ManagePointsView } from '../teacher/ManagePointsView';
+import { NoticeCenter } from '../teacher/NoticeCenter';
 
 export const TeacherDashboard = () => {
-  const { user, activeBlock } = useAuth();
+  const { user, token, activeBlock } = useAuth();
   const { isAmoled } = useTheme();
 
-  // Tab state: 'schedule' | 'classes'
-  const [activeTab, setActiveTab] = useState('classes');
+  // Tab state: 'attendance' | 'points' | 'notices' | 'classes' | 'schedule'
+  const [activeTab, setActiveTab] = useState('attendance');
+  const [classes, setClasses] = useState([]);
+  const [selectedClassId, setSelectedClassId] = useState('');
+  const [loadingClasses, setLoadingClasses] = useState(false);
+
+  // Fetch classes for teacher
+  const fetchClasses = useCallback(async () => {
+    setLoadingClasses(true);
+    try {
+      const res = await fetch('/api/classes', {
+        headers: { Authorization: token ? `Bearer ${token}` : '' },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const list = data.classes || [];
+        setClasses(list);
+        if (list.length > 0 && !selectedClassId) {
+          setSelectedClassId(list[0]._id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch classes in TeacherDashboard:', err);
+    } finally {
+      setLoadingClasses(false);
+    }
+  }, [token, selectedClassId]);
+
+  useEffect(() => {
+    fetchClasses();
+  }, [fetchClasses]);
 
   const schedule = [
     {
@@ -62,7 +96,7 @@ export const TeacherDashboard = () => {
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
               <Award className="w-3.5 h-3.5" />
-              <span>Faculty Academic & In-Charge Portal</span>
+              <span>Faculty Academic & In-Charge Command Center · Phase 4</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
               {user?.name || 'Prof. Rajesh Sharma'}
@@ -70,8 +104,7 @@ export const TeacherDashboard = () => {
             <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
               <Building2 className="w-4 h-4 text-brand-cyan" />
               <span>
-                Faculty Cabin: <strong>Kalam Block - 2nd Floor (Cabin 12)</strong> ·{' '}
-                {activeBlock}
+                Faculty Cabin: <strong>Kalam Block - 2nd Floor (Cabin 12)</strong> · {activeBlock}
               </span>
             </p>
           </div>
@@ -93,14 +126,72 @@ export const TeacherDashboard = () => {
         </div>
       </div>
 
-      {/* Portal Navigation Switcher */}
-      <div className="flex items-center gap-3 border-b border-current/10 pb-4">
+      {/* Modern Horizontal Navigation Tabs */}
+      <div className="flex flex-wrap items-center gap-2.5 border-b border-current/10 pb-4">
+        {/* Tab 1: Attendance Grid */}
+        <button
+          onClick={() => {
+            sfx.playClick();
+            setActiveTab('attendance');
+          }}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+            activeTab === 'attendance'
+              ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-500/40 shadow-neon-emerald/20'
+              : isAmoled
+              ? 'text-slate-400 hover:text-white border border-transparent'
+              : 'text-slate-600 hover:text-slate-900 border border-transparent'
+          }`}
+        >
+          <ClipboardCheck className="w-4 h-4" />
+          <span>Attendance Grid</span>
+        </button>
+
+        {/* Tab 2: Manage Points View */}
+        <button
+          onClick={() => {
+            sfx.playClick();
+            setActiveTab('points');
+          }}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+            activeTab === 'points'
+              ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40'
+              : isAmoled
+              ? 'text-slate-400 hover:text-white border border-transparent'
+              : 'text-slate-600 hover:text-slate-900 border border-transparent'
+          }`}
+        >
+          <Award className="w-4 h-4" />
+          <span>Manage Points</span>
+        </button>
+
+        {/* Tab 3: Messaging & Notice Center */}
+        <button
+          onClick={() => {
+            sfx.playClick();
+            setActiveTab('notices');
+          }}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+            activeTab === 'notices'
+              ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/40'
+              : isAmoled
+              ? 'text-slate-400 hover:text-white border border-transparent'
+              : 'text-slate-600 hover:text-slate-900 border border-transparent'
+          }`}
+        >
+          <Bell className="w-4 h-4" />
+          <span>Notice Center</span>
+          <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-purple-500/20 text-purple-300">
+            MST
+          </span>
+        </button>
+
+        {/* Tab 4: My Classes & Excel Importer */}
         <button
           onClick={() => {
             sfx.playClick();
             setActiveTab('classes');
           }}
-          className={`flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             activeTab === 'classes'
               ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-brand-cyan border border-cyan-500/40 shadow-neon-cyan/20'
               : isAmoled
@@ -109,28 +200,56 @@ export const TeacherDashboard = () => {
           }`}
         >
           <GraduationCap className="w-4 h-4" />
-          <span>My Classes & Student Excel Importer</span>
+          <span>My Classes & Excel Importer</span>
         </button>
 
+        {/* Tab 5: Today's Schedule */}
         <button
           onClick={() => {
             sfx.playClick();
             setActiveTab('schedule');
           }}
-          className={`flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             activeTab === 'schedule'
-              ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/40'
+              ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-300 border border-blue-500/40'
               : isAmoled
               ? 'text-slate-400 hover:text-white border border-transparent'
               : 'text-slate-600 hover:text-slate-900 border border-transparent'
           }`}
         >
           <Calendar className="w-4 h-4" />
-          <span>Teaching Schedule & Lectures</span>
+          <span>Today's Schedule</span>
         </button>
       </div>
 
-      {/* TAB 1: CLASS IN-CHARGE & STUDENT EXCEL IMPORTER */}
+      {/* VIEW 1: ATTENDANCE GRID */}
+      {activeTab === 'attendance' && (
+        <AttendanceGrid
+          classes={classes}
+          selectedClassId={selectedClassId}
+          onClassSelect={(cId) => setSelectedClassId(cId)}
+        />
+      )}
+
+      {/* VIEW 2: MANAGE POINTS */}
+      {activeTab === 'points' && (
+        <ManagePointsView
+          classes={classes}
+          selectedClassId={selectedClassId}
+          onClassSelect={(cId) => setSelectedClassId(cId)}
+        />
+      )}
+
+      {/* VIEW 3: MESSAGING & MST NOTICE CENTER */}
+      {activeTab === 'notices' && (
+        <NoticeCenter
+          classes={classes}
+          selectedClassId={selectedClassId}
+          onClassSelect={(cId) => setSelectedClassId(cId)}
+        />
+      )}
+
+      {/* VIEW 4: CLASS IN-CHARGE & STUDENT EXCEL IMPORTER */}
       {activeTab === 'classes' && (
         <ClassManagement
           defaultInchargeId={user?._id}
@@ -138,7 +257,7 @@ export const TeacherDashboard = () => {
         />
       )}
 
-      {/* TAB 2: SCHEDULE VIEW */}
+      {/* VIEW 5: SCHEDULE VIEW */}
       {activeTab === 'schedule' && (
         <div className="space-y-6 animate-fade-in">
           {/* Quick Metrics */}
@@ -169,8 +288,10 @@ export const TeacherDashboard = () => {
                 <span>Total Enrolled Students</span>
                 <Users className="w-4 h-4 text-brand-indigo" />
               </div>
-              <div className="text-3xl font-black">164 Scholars</div>
-              <div className="text-xs text-slate-500 mt-1">Across Sections A, B & C</div>
+              <div className="text-3xl font-black">
+                {classes.reduce((acc, c) => acc + (c.studentCount || 0), 0)} Scholars
+              </div>
+              <div className="text-xs text-slate-500 mt-1">Across all registered Kalam batches</div>
             </div>
 
             <div
@@ -181,11 +302,11 @@ export const TeacherDashboard = () => {
               }`}
             >
               <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-2">
-                <span>Attendance Average</span>
-                <ClipboardCheck className="w-4 h-4 text-emerald-400" />
+                <span>Campus Status</span>
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
               </div>
-              <div className="text-3xl font-black text-emerald-400">92.4%</div>
-              <div className="text-xs text-slate-500 mt-1">Kalam Block Lecture Halls</div>
+              <div className="text-3xl font-black text-emerald-400">Optimal</div>
+              <div className="text-xs text-slate-500 mt-1">Abdul Kalam Block Lecture Halls</div>
             </div>
           </div>
 
@@ -233,9 +354,13 @@ export const TeacherDashboard = () => {
                     <span className="text-xs font-semibold text-slate-400">{item.attendance}</span>
                     <button
                       type="button"
+                      onClick={() => {
+                        sfx.playClick();
+                        setActiveTab('attendance');
+                      }}
                       className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-brand-indigo hover:bg-brand-indigo/90 transition-colors flex items-center gap-1"
                     >
-                      <span>Mark Attendance</span>
+                      <span>Take Attendance</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
