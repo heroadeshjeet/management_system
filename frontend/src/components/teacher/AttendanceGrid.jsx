@@ -18,6 +18,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
+import { API_BASE_URL } from '../../config/api';
 
 export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSelect }) => {
   const { user, token, activeBlock } = useAuth();
@@ -53,7 +54,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
 
     try {
       // 1. Fetch class details to get enrolled students
-      const classRes = await fetch(`/api/classes/${activeClassId}`, {
+      const classRes = await fetch(`${API_BASE_URL}/classes/${activeClassId}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const classData = await classRes.json();
@@ -61,7 +62,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
       setStudents(classStudents);
 
       // 2. Fetch existing attendance for this date
-      const attRes = await fetch(`/api/attendance/${activeClassId}/${selectedDate}`, {
+      const attRes = await fetch(`${API_BASE_URL}/attendance/${activeClassId}/${selectedDate}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const attData = await attRes.json();
@@ -144,7 +145,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
     }));
 
     try {
-      const res = await fetch('/api/attendance', {
+      const res = await fetch(`${API_BASE_URL}/attendance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

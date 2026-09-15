@@ -25,6 +25,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { API_BASE_URL } from '../../config/api';
 
 export const StudentDashboard = () => {
   const { user, token, activeBlock } = useAuth();
@@ -44,7 +45,7 @@ export const StudentDashboard = () => {
     setError(null);
 
     try {
-      const res = await fetch(`/api/students/${studentIdentifier}/dashboard`, {
+      const res = await fetch(`${API_BASE_URL}/students/${studentIdentifier}/dashboard`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : '',
         },

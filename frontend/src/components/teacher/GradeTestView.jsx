@@ -19,6 +19,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
+import { API_BASE_URL } from '../../config/api';
 import { TestLeaderboardModal } from './TestLeaderboardModal';
 
 export const GradeTestView = ({
@@ -72,7 +73,7 @@ export const GradeTestView = ({
       // 1. Fetch Notice Details (if not provided)
       let currentNotice = notice;
       if (!currentNotice) {
-        const noticeRes = await fetch(`/api/notifications/${notificationId}`, {
+        const noticeRes = await fetch(`${API_BASE_URL}/notifications/${notificationId}`, {
           headers: { Authorization: token ? `Bearer ${token}` : '' },
         });
         if (noticeRes.ok) {
@@ -85,7 +86,7 @@ export const GradeTestView = ({
       const classId = currentNotice?.classId?._id || currentNotice?.classId;
 
       // 2. Fetch existing marks for this test
-      const marksRes = await fetch(`/api/tests/marks/${notificationId}`, {
+      const marksRes = await fetch(`${API_BASE_URL}/tests/marks/${notificationId}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const marksData = await marksRes.json();
@@ -104,7 +105,7 @@ export const GradeTestView = ({
 
       // 3. Fetch Class Scholars list
       if (classId) {
-        const classRes = await fetch(`/api/classes/${classId}`, {
+        const classRes = await fetch(`${API_BASE_URL}/classes/${classId}`, {
           headers: { Authorization: token ? `Bearer ${token}` : '' },
         });
         if (classRes.ok) {
@@ -191,7 +192,7 @@ export const GradeTestView = ({
 
       const classId = notice?.classId?._id || notice?.classId;
 
-      const res = await fetch('/api/tests/marks', {
+      const res = await fetch(`${API_BASE_URL}/tests/marks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { API_BASE_URL } from '../../config/api';
 import { TestLeaderboardModal } from './TestLeaderboardModal';
 
 export const NoticeCenter = ({
@@ -54,7 +55,7 @@ export const NoticeCenter = ({
     setLeaderboardLoadingId(notice._id);
     setLeaderboardNoticeTitle(notice.message);
     try {
-      const res = await fetch(`/api/tests/marks/${notice._id}`, {
+      const res = await fetch(`${API_BASE_URL}/tests/marks/${notice._id}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const data = await res.json();
@@ -91,7 +92,7 @@ export const NoticeCenter = ({
     if (!activeClassId) return;
 
     try {
-      const res = await fetch(`/api/classes/${activeClassId}`, {
+      const res = await fetch(`${API_BASE_URL}/classes/${activeClassId}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const data = await res.json();
@@ -112,7 +113,7 @@ export const NoticeCenter = ({
     setLoadingHistory(true);
 
     try {
-      const res = await fetch(`/api/notifications?classId=${activeClassId}&limit=20`, {
+      const res = await fetch(`${API_BASE_URL}/notifications?classId=${activeClassId}&limit=20`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const data = await res.json();
@@ -174,7 +175,7 @@ export const NoticeCenter = ({
     setStatusMessage(null);
 
     try {
-      const res = await fetch('/api/notifications/send', {
+      const res = await fetch(`${API_BASE_URL}/notifications/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

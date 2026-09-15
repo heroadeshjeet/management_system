@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { API_BASE_URL } from '../../config/api';
 import { ClassManagement } from '../classes/ClassManagement';
 import { AttendanceGrid } from '../teacher/AttendanceGrid';
 import { ManagePointsView } from '../teacher/ManagePointsView';
@@ -61,7 +62,7 @@ export const TeacherDashboard = () => {
   const fetchClasses = useCallback(async () => {
     setLoadingClasses(true);
     try {
-      const res = await fetch('/api/classes', {
+      const res = await fetch(`${API_BASE_URL}/classes`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const data = await res.json();

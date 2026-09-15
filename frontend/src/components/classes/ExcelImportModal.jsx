@@ -16,6 +16,7 @@ import { downloadTemplate, parseExcelFile } from '../../utils/excelUtils';
 import { sfx } from '../../utils/soundEffects';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { API_BASE_URL } from '../../config/api';
 
 export const ExcelImportModal = ({ targetClass, isOpen, onClose, onSuccess }) => {
   const { user, token } = useAuth();
@@ -85,7 +86,7 @@ export const ExcelImportModal = ({ targetClass, isOpen, onClose, onSuccess }) =>
     setErrorMessage(null);
 
     try {
-      const res = await fetch('/api/students/bulk-import', {
+      const res = await fetch(`${API_BASE_URL}/students/bulk-import`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

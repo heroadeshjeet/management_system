@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { API_BASE_URL } from '../../config/api';
 
 export const ManagePointsView = ({ classes = [], selectedClassId = '', onClassSelect }) => {
   const { user, token, activeBlock } = useAuth();
@@ -42,7 +43,7 @@ export const ManagePointsView = ({ classes = [], selectedClassId = '', onClassSe
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/classes/${activeClassId}`, {
+      const res = await fetch(`${API_BASE_URL}/classes/${activeClassId}`, {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
       const data = await res.json();
@@ -66,7 +67,7 @@ export const ManagePointsView = ({ classes = [], selectedClassId = '', onClassSe
     sfx.playClick();
 
     try {
-      const res = await fetch(`/api/students/${student._id}/points`, {
+      const res = await fetch(`${API_BASE_URL}/students/${student._id}/points`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

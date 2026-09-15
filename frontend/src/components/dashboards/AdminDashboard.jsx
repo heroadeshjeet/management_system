@@ -25,6 +25,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { API_BASE_URL } from '../../config/api';
 import { ClassManagement } from '../classes/ClassManagement';
 
 export const AdminDashboard = () => {
@@ -64,7 +65,7 @@ export const AdminDashboard = () => {
   const fetchTeachers = useCallback(async () => {
     setLoadingTeachers(true);
     try {
-      const res = await fetch('/api/admin/teachers', {
+      const res = await fetch(`${API_BASE_URL}/admin/teachers`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'x-actor-name': user?.name || 'Admin',
@@ -86,7 +87,7 @@ export const AdminDashboard = () => {
   const fetchLogs = useCallback(async () => {
     setLoadingLogs(true);
     try {
-      const res = await fetch('/api/blackbox/logs?limit=150', {
+      const res = await fetch(`${API_BASE_URL}/blackbox/logs?limit=150`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'x-actor-name': user?.name || 'Admin',
@@ -106,7 +107,7 @@ export const AdminDashboard = () => {
 
   // Health check
   useEffect(() => {
-    fetch('/api/health')
+    fetch(`${API_BASE_URL}/health`)
       .then((res) => res.json())
       .then((data) => {
         if (data?.database) {
@@ -144,7 +145,7 @@ export const AdminDashboard = () => {
     setTeacherActionMsg(null);
 
     try {
-      const res = await fetch('/api/admin/teachers', {
+      const res = await fetch(`${API_BASE_URL}/admin/teachers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +197,7 @@ export const AdminDashboard = () => {
 
     try {
       sfx.playClick();
-      const res = await fetch(`/api/admin/teachers/${teacher._id || teacher.fileNumber}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/teachers/${teacher._id || teacher.fileNumber}`, {
         method: 'DELETE',
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',

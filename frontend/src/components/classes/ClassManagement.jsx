@@ -23,6 +23,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
+import { API_BASE_URL } from '../../config/api';
 import { downloadTemplate } from '../../utils/excelUtils';
 import { ExcelImportModal } from './ExcelImportModal';
 
@@ -61,7 +62,7 @@ export const ClassManagement = ({ defaultInchargeId = null, filterByIncharge = f
   const fetchClasses = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/classes', {
+      const res = await fetch(`${API_BASE_URL}/classes`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'x-actor-name': user?.name || 'User',
@@ -90,7 +91,7 @@ export const ClassManagement = ({ defaultInchargeId = null, filterByIncharge = f
   // Fetch teachers for incharge/subject allocation
   const fetchTeachers = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/teachers', {
+      const res = await fetch(`${API_BASE_URL}/admin/teachers`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
@@ -132,7 +133,7 @@ export const ClassManagement = ({ defaultInchargeId = null, filterByIncharge = f
     setLoadingRoster(true);
 
     try {
-      const res = await fetch(`/api/classes/${cls._id}`, {
+      const res = await fetch(`${API_BASE_URL}/classes/${cls._id}`, {
         headers: { 'Authorization': token ? `Bearer ${token}` : '' },
       });
       const data = await res.json();
@@ -183,7 +184,7 @@ export const ClassManagement = ({ defaultInchargeId = null, filterByIncharge = f
     setFormError(null);
 
     try {
-      const res = await fetch('/api/classes', {
+      const res = await fetch(`${API_BASE_URL}/classes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
