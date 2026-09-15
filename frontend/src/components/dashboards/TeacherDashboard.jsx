@@ -21,16 +21,41 @@ import { ClassManagement } from '../classes/ClassManagement';
 import { AttendanceGrid } from '../teacher/AttendanceGrid';
 import { ManagePointsView } from '../teacher/ManagePointsView';
 import { NoticeCenter } from '../teacher/NoticeCenter';
+import { GradeTestView } from '../teacher/GradeTestView';
 
 export const TeacherDashboard = () => {
   const { user, token, activeBlock } = useAuth();
   const { isAmoled } = useTheme();
+
+  // Dynamic route / view state for test evaluation (/teacher/grade-test/:notificationId)
+  const [gradingNotice, setGradingNotice] = useState(null);
+  const [gradingNotificationId, setGradingNotificationId] = useState(null);
 
   // Tab state: 'attendance' | 'points' | 'notices' | 'classes' | 'schedule'
   const [activeTab, setActiveTab] = useState('attendance');
   const [classes, setClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [loadingClasses, setLoadingClasses] = useState(false);
+
+  // Synchronize browser URL with /teacher/grade-test/:notificationId route
+  useEffect(() => {
+    const checkRoute = () => {
+      if (typeof window !== 'undefined') {
+        const match = window.location.pathname.match(/\/teacher\/grade-test\/([^/?#]+)/);
+        if (match && match[1]) {
+          setGradingNotificationId(match[1]);
+        } else {
+          setGradingNotificationId(null);
+          setGradingNotice(null);
+        }
+      }
+    };
+
+    checkRoute();
+    window.addEventListener('popstate', checkRoute);
+    return () => window.removeEventListener('popstate', checkRoute);
+  }, []);
+
 
   // Fetch classes for teacher
   const fetchClasses = useCallback(async () => {
@@ -81,6 +106,26 @@ export const TeacherDashboard = () => {
       attendance: 'Scheduled',
     },
   ];
+
+  // If currently grading a test examination, render dedicated GradeTestView
+  if (gradingNotice || gradingNotificationId) {
+    return (
+      <GradeTestView
+        notificationId={gradingNotificationId || gradingNotice?._id}
+        notification={gradingNotice}
+        onBack={() => {
+          setGradingNotice(null);
+          setGradingNotificationId(null);
+          if (typeof window !== 'undefined' && window.location.pathname.includes('/teacher/grade-test')) {
+            window.history.pushState({}, '', '/');
+          }
+        }}
+        onGraded={(result) => {
+          console.log('Test evaluation finalized:', result);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
@@ -246,6 +291,13 @@ export const TeacherDashboard = () => {
           classes={classes}
           selectedClassId={selectedClassId}
           onClassSelect={(cId) => setSelectedClassId(cId)}
+          onGradeTest={(notice) => {
+            setGradingNotice(notice);
+            setGradingNotificationId(notice._id);
+            if (typeof window !== 'undefined') {
+              window.history.pushState({}, '', `/teacher/grade-test/${notice._id}`);
+            }
+          }}
         />
       )}
 

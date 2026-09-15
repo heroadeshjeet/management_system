@@ -137,4 +137,37 @@ export const getNotifications = async (req, res) => {
   }
 };
 
-export default { sendNotification, getNotifications };
+/**
+ * GET /api/notifications/:id
+ * Retrieves a single notification by its ObjectId
+ */
+export const getNotificationById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const notification = await Notification.findById(id)
+      .populate('senderId', 'name fileNumber department')
+      .populate('classId', 'className block students');
+
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
+        message: 'Notification not found.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      notification,
+    });
+  } catch (error) {
+    console.error('❌ [getNotificationById Error]:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve notification.',
+      error: error.message,
+    });
+  }
+};
+
+export default { sendNotification, getNotifications, getNotificationById };
+

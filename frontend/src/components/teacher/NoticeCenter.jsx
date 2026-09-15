@@ -13,12 +13,20 @@ import {
   Clock,
   Sparkles,
   Zap,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { TestLeaderboardModal } from './TestLeaderboardModal';
 
-export const NoticeCenter = ({ classes = [], selectedClassId = '', onClassSelect }) => {
+export const NoticeCenter = ({
+  classes = [],
+  selectedClassId = '',
+  onClassSelect,
+  onGradeTest,
+}) => {
+
   const { user, token, activeBlock } = useAuth();
   const { isAmoled } = useTheme();
 
@@ -34,6 +42,43 @@ export const NoticeCenter = ({ classes = [], selectedClassId = '', onClassSelect
   const [statusMessage, setStatusMessage] = useState(null);
   const [recentNotices, setRecentNotices] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+
+  // Phase 5 Test Leaderboard states
+  const [selectedLeaderboardResult, setSelectedLeaderboardResult] = useState(null);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [leaderboardLoadingId, setLeaderboardLoadingId] = useState(null);
+  const [leaderboardNoticeTitle, setLeaderboardNoticeTitle] = useState('');
+
+  const handleOpenLeaderboard = async (notice) => {
+    sfx.playClick();
+    setLeaderboardLoadingId(notice._id);
+    setLeaderboardNoticeTitle(notice.message);
+    try {
+      const res = await fetch(`/api/tests/marks/${notice._id}`, {
+        headers: { Authorization: token ? `Bearer ${token}` : '' },
+      });
+      const data = await res.json();
+      if (res.ok && data.exists && data.testResult) {
+        setSelectedLeaderboardResult(data.testResult);
+        setIsLeaderboardOpen(true);
+      } else {
+        sfx.playError();
+        setStatusMessage({
+          type: 'error',
+          text: 'No marks evaluated yet for this test. Click "Grade Evaluation" to enter marks!',
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load leaderboard for test:', err);
+      sfx.playError();
+      setStatusMessage({
+        type: 'error',
+        text: 'Failed to fetch test leaderboard.',
+      });
+    } finally {
+      setLeaderboardLoadingId(null);
+    }
+  };
 
   useEffect(() => {
     if (selectedClassId && selectedClassId !== activeClassId) {
@@ -504,13 +549,60 @@ export const NoticeCenter = ({ classes = [], selectedClassId = '', onClassSelect
                     Delivered to {notice.targetAudience?.length || 0} scholars
                   </span>
                 </div>
+
+                {/* Phase 5 Action Buttons for Test / MST notices */}
+                {notice.isTest && (
+                  <div className="pt-2 flex flex-wrap items-center gap-2 border-t border-purple-500/20">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sfx.playClick();
+                        if (onGradeTest) {
+                          onGradeTest(notice);
+                        } else if (typeof window !== 'undefined') {
+                          window.history.pushState({}, '', `/teacher/grade-test/${notice._id}`);
+                          window.dispatchEvent(new PopStateEvent('popstate'));
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 transition-all shadow-sm"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>Grade Evaluation</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleOpenLeaderboard(notice)}
+                      disabled={leaderboardLoadingId === notice._id}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition-all shadow-sm"
+                    >
+                      <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                      <span>
+                        {leaderboardLoadingId === notice._id
+                          ? 'Fetching Results...'
+                          : 'View Leaderboard 🥇'}
+                      </span>
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Test Leaderboard Modal */}
+      {isLeaderboardOpen && selectedLeaderboardResult && (
+        <TestLeaderboardModal
+          testResult={selectedLeaderboardResult}
+          isOpen={isLeaderboardOpen}
+          onClose={() => setIsLeaderboardOpen(false)}
+          noticeTitle={leaderboardNoticeTitle || 'Examination Leaderboard'}
+        />
+      )}
     </div>
   );
 };
 
 export default NoticeCenter;
+

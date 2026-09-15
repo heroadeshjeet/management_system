@@ -7,7 +7,7 @@ import { SoundToggle } from './SoundToggle';
 
 export const Navbar = ({ onReplaySplash }) => {
   const { user, activeBlock, logout } = useAuth();
-  const { isAmoled } = useTheme();
+  const { isAmoled, theme } = useTheme();
 
   return (
     <header
@@ -21,13 +21,24 @@ export const Navbar = ({ onReplaySplash }) => {
         {/* Left: Brand & Block Badge */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center border transition-all ${
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl p-1 flex items-center justify-center border transition-all overflow-hidden ${
               isAmoled
                 ? 'bg-neutral-950 border-brand-cyan/30 text-brand-cyan shadow-neon-cyan/20'
                 : 'bg-indigo-50 border-indigo-200 text-brand-indigo'
             }`}
           >
-            <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
+            <img
+              src={isAmoled || theme === 'dark' ? '/logo_dark.png' : '/logo_light.png'}
+              alt="Aryabhatta Group Logo"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                if (e.currentTarget.nextElementSibling) {
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }
+              }}
+            />
+            <span className="hidden font-extrabold text-xs tracking-tighter">AGI</span>
           </div>
 
           <div className="flex flex-col">
@@ -36,7 +47,7 @@ export const Navbar = ({ onReplaySplash }) => {
                 Aryabhatta Group
               </span>
               <span className="hidden md:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
-                Phase 1
+                Phase 5
               </span>
             </div>
 
