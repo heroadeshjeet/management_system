@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Sparkles, Shield, Compass, Volume2, ArrowRight } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import { sfx } from '../utils/soundEffects';
 
 export const SplashScreen = ({ onFinish }) => {
+  const { isAmoled, theme } = useTheme();
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [progress, setProgress] = useState(0);
   const [audioPlayed, setAudioPlayed] = useState(false);
@@ -96,14 +98,29 @@ export const SplashScreen = ({ onFinish }) => {
 
       {/* Center Branding & Typography */}
       <div className="flex flex-col items-center text-center max-w-3xl z-10 px-4 my-auto">
-        {/* Animated Emblem */}
-        <div className="relative mb-8 group">
-          <div className="absolute -inset-2 bg-gradient-to-r from-brand-cyan via-brand-indigo to-brand-violet rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition duration-1000 animate-pulse"></div>
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-neutral-950 border border-white/20 flex items-center justify-center shadow-2xl backdrop-blur-xl">
-            <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-brand-cyan" />
-            <Sparkles className="w-5 h-5 text-brand-indigo absolute -top-1 -right-1 animate-bounce" />
+        {/* Dynamic Horizontal Institutional Logo */}
+        <div className="relative mb-8 group flex items-center justify-center">
+          <div className="absolute -inset-3 bg-gradient-to-r from-brand-cyan/25 via-brand-indigo/25 to-brand-violet/25 rounded-3xl blur-xl opacity-60 group-hover:opacity-100 transition duration-1000 animate-pulse"></div>
+          <div className="relative px-6 py-4 rounded-3xl bg-neutral-950/80 border border-white/15 flex items-center justify-center shadow-2xl backdrop-blur-2xl transition-all">
+            <img
+              src={isAmoled || theme === 'dark' ? '/logo_dark.png' : '/logo_light.png'}
+              alt="Aryabhatta Group of Institutes"
+              className="w-64 sm:w-80 h-auto max-h-24 object-contain max-w-full drop-shadow-2xl"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                if (e.currentTarget.nextElementSibling) {
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }
+              }}
+            />
+            <div className="hidden items-center gap-2 text-brand-cyan font-black text-xl tracking-tight">
+              <Shield className="w-8 h-8" />
+              <span>ARYABHATTA GROUP</span>
+            </div>
+            <Sparkles className="w-5 h-5 text-brand-cyan absolute -top-2 -right-2 animate-bounce" />
           </div>
         </div>
+
 
         {/* Primary Institute Heading */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 mb-6 drop-shadow-sm">
