@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 
 export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSelect }) => {
   const { user, token, activeBlock } = useAuth();
@@ -101,6 +102,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
   // 1-Click Batch Action: Mark All Present
   const handleMarkAllPresent = () => {
     sfx.playClick();
+    haptics.tap(25);
     const updated = {};
     students.forEach((s) => {
       updated[s._id] = 'present';
@@ -111,6 +113,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
   // 1-Click Batch Action: Mark All Absent
   const handleMarkAllAbsent = () => {
     sfx.playClick();
+    haptics.tap(25);
     const updated = {};
     students.forEach((s) => {
       updated[s._id] = 'absent';
@@ -121,6 +124,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
   // Individual Student Status Change
   const handleStatusChange = (studentId, status) => {
     sfx.playClick();
+    haptics.tap(15);
     setAttendanceRecords((prev) => ({
       ...prev,
       [studentId]: status,
@@ -160,6 +164,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
 
       if (res.ok && data.success) {
         sfx.playSuccess();
+        haptics.success();
         setIsExistingRecord(true);
         setStatusMessage({
           type: 'success',
@@ -167,6 +172,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
         });
       } else {
         sfx.playError();
+        haptics.error();
         setStatusMessage({
           type: 'error',
           text: data.message || 'Failed to submit attendance.',
@@ -174,6 +180,7 @@ export const AttendanceGrid = ({ classes = [], selectedClassId = '', onClassSele
       }
     } catch (err) {
       sfx.playError();
+      haptics.error();
       setStatusMessage({ type: 'error', text: 'Network error submitting attendance.' });
     } finally {
       setIsSubmitting(false);

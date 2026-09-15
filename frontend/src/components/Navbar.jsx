@@ -17,11 +17,11 @@ export const Navbar = ({ onReplaySplash }) => {
           : 'bg-white/85 backdrop-blur-xl border-slate-200/80 text-slate-900 shadow-sm'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left: Brand & Block Badge */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <div
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl p-1 flex items-center justify-center border transition-all overflow-hidden ${
+            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl p-1 flex items-center justify-center border transition-all overflow-hidden shrink-0 ${
               isAmoled
                 ? 'bg-neutral-950 border-brand-cyan/30 text-brand-cyan shadow-neon-cyan/20'
                 : 'bg-indigo-50 border-indigo-200 text-brand-indigo'
@@ -41,41 +41,40 @@ export const Navbar = ({ onReplaySplash }) => {
             <span className="hidden font-extrabold text-xs tracking-tighter">AGI</span>
           </div>
 
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-sm sm:text-base tracking-tight">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-extrabold text-xs sm:text-base tracking-tight truncate">
                 Aryabhatta Group
               </span>
               <span className="hidden md:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
                 Phase 7
               </span>
-
             </div>
 
             {/* Active Block Indicator */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <Building2 className="w-3 h-3 text-brand-cyan" />
-              <span className="font-medium text-brand-cyan tracking-wide">
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
+              <Building2 className="w-3 h-3 text-brand-cyan shrink-0" />
+              <span className="font-medium text-brand-cyan tracking-wide truncate max-w-[120px] sm:max-w-none">
                 {activeBlock}
               </span>
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
             </div>
           </div>
         </div>
 
         {/* Right: Controls & User Info */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Replay Splash Screen Icon */}
           <button
             onClick={onReplaySplash}
             title="Replay Animated Intro Screen"
-            className={`p-2 rounded-full border transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-full border transition-colors ${
               isAmoled
                 ? 'border-white/10 hover:bg-white/10 text-slate-300'
                 : 'border-slate-200 hover:bg-slate-100 text-slate-700'
             }`}
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
           {/* Sound Toggle */}
@@ -86,7 +85,7 @@ export const Navbar = ({ onReplaySplash }) => {
 
           {/* User Session Info / Logout Button */}
           {user ? (
-            <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-3 border-l border-current/10">
+            <div className="flex items-center gap-1.5 sm:gap-3 pl-1.5 sm:pl-3 border-l border-current/10">
               <div className="hidden lg:flex flex-col text-right">
                 <span className="text-xs font-bold leading-none">{user.name}</span>
                 <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">

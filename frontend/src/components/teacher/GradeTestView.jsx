@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 import { TestLeaderboardModal } from './TestLeaderboardModal';
 
 export const GradeTestView = ({
@@ -151,6 +152,7 @@ export const GradeTestView = ({
   // Quick fill all with a percentage or benchmark
   const handleBatchFill = (pct) => {
     sfx.playClick();
+    haptics.tap(20);
     const benchmark = Math.round((Number(totalMarks) * pct) / 100);
     const updated = {};
     studentList.forEach((stu) => {
@@ -211,6 +213,7 @@ export const GradeTestView = ({
 
       if (res.ok && data.success) {
         sfx.playSuccess();
+        haptics.success();
         setSavedTestResult(data.testResult);
         setStatusMessage({
           type: 'success',
@@ -223,6 +226,7 @@ export const GradeTestView = ({
         setShowLeaderboard(true);
       } else {
         sfx.playError();
+        haptics.error();
         setStatusMessage({
           type: 'error',
           text: data.message || 'Failed to submit test evaluation.',
@@ -231,6 +235,7 @@ export const GradeTestView = ({
     } catch (err) {
       console.error('Submit marks error:', err);
       sfx.playError();
+      haptics.error();
       setStatusMessage({ type: 'error', text: 'Server error while submitting marks.' });
     } finally {
       setIsSubmitting(false);

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { sfx } from '../utils/soundEffects';
+import { haptics } from '../utils/haptics';
 
 const ThemeContext = createContext();
 
@@ -28,6 +29,7 @@ export const ThemeProvider = ({ children }) => {
 
   const toggleTheme = () => {
     sfx.playClick();
+    haptics.tap(25);
     setTheme((prev) => (prev === 'amoled' ? 'light' : 'amoled'));
   };
 

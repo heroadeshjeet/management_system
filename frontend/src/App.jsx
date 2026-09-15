@@ -54,6 +54,7 @@ const MainLayout = () => {
 
     // 2. Block DevTools keyboard shortcuts (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U)
     const handleKeyDown = (e) => {
+      // Windows / Linux / macOS DevTools shortcuts
       const isF12 = e.key === 'F12' || e.keyCode === 123;
       const isCtrlShiftI =
         (e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i');
@@ -62,8 +63,11 @@ const MainLayout = () => {
       const isCtrlShiftC =
         (e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c');
       const isCtrlU = (e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U');
+      // macOS specific Option+Cmd (Alt+Meta) DevTools inspector shortcuts
+      const isMacOptCmdDevTools =
+        e.metaKey && e.altKey && ['i', 'j', 'c', 'u'].includes(e.key.toLowerCase());
 
-      if (isF12 || isCtrlShiftI || isCtrlShiftJ || isCtrlShiftC || isCtrlU) {
+      if (isF12 || isCtrlShiftI || isCtrlShiftJ || isCtrlShiftC || isCtrlU || isMacOptCmdDevTools) {
         e.preventDefault();
         haptics.error();
         sfx.playError();

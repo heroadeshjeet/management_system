@@ -22,6 +22,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 import { downloadTemplate } from '../../utils/excelUtils';
 import { ExcelImportModal } from './ExcelImportModal';
 
@@ -202,6 +203,7 @@ export const ClassManagement = ({ defaultInchargeId = null, filterByIncharge = f
 
       if (res.ok && data.success) {
         sfx.playSuccess();
+        haptics.success();
         setShowCreateModal(false);
         setClassForm({
           className: '',
@@ -213,10 +215,12 @@ export const ClassManagement = ({ defaultInchargeId = null, filterByIncharge = f
         fetchClasses();
       } else {
         sfx.playError();
+        haptics.error();
         setFormError(data.message || 'Failed to create class.');
       }
     } catch (err) {
       sfx.playError();
+      haptics.error();
       setFormError('Network error while saving class.');
     } finally {
       setIsSubmitting(false);
