@@ -35,6 +35,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'Computer Science & Engineering',
     },
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Class',
+      default: null,
+    },
+    className: {
+      type: String,
+      default: '',
+    },
     avatar: {
       type: String,
       default: '',

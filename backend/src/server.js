@@ -7,6 +7,8 @@ import { auditLogger } from './middleware/auditLogger.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import blackboxRoutes from './routes/blackboxRoutes.js';
+import classRoutes from './routes/classRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +33,8 @@ app.use(auditLogger);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blackbox', blackboxRoutes);
+app.use('/api/classes', classRoutes);
+app.use('/api/students', studentRoutes);
 
 // Health Check & System Status Endpoint
 app.get('/api/health', (req, res) => {
@@ -39,7 +43,7 @@ app.get('/api/health', (req, res) => {
     status: 'online',
     system: 'Aryabhatta Group of Institutes Management System',
     block: 'Abdul Kalam Block',
-    phase: 'Phase 2 Database & Admin Command Center',
+    phase: 'Phase 3 Class Management & Excel Import Engine',
     author: 'Adeshjeet_Official',
     timestamp: new Date().toISOString(),
     database: dbStatus,
@@ -60,14 +64,15 @@ app.get('/api/db-status', (req, res) => {
 app.get('/', (req, res) => {
   res.send({
     message: 'Aryabhatta Group of Institutes Management API - Abdul Kalam Block',
-    phase: 'Phase 2 Database & Admin Command Center',
+    phase: 'Phase 3 Class Management & Excel Import Engine',
     endpoints: {
       health: '/api/health',
       dbStatus: '/api/db-status',
       login: 'POST /api/auth/login',
-      demoAccounts: 'GET /api/auth/demo-accounts',
       teachers: 'GET/POST/DELETE /api/admin/teachers',
       blackboxLogs: 'GET /api/blackbox/logs',
+      classes: 'GET/POST /api/classes',
+      studentBulkImport: 'POST /api/students/bulk-import',
     },
   });
 });
@@ -84,7 +89,7 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`🚀 [Server Running]: http://localhost:${PORT}`);
     console.log(`🏛️  [Block Association]: Abdul Kalam Block`);
-    console.log(`📡 [API Surface]: Auth, Admin (/api/admin/teachers), Blackbox (/api/blackbox/logs)`);
+    console.log(`📡 [API Surface]: Auth, Admin, Blackbox, Classes, Student Bulk Import`);
     console.log(`🩺 [Health Check]: http://localhost:${PORT}/api/health`);
   });
 };

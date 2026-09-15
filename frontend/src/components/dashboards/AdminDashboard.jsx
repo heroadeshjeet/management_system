@@ -20,10 +20,12 @@ import {
   X,
   Layers,
   Sparkles,
+  GraduationCap,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { sfx } from '../../utils/soundEffects';
+import { ClassManagement } from '../classes/ClassManagement';
 
 export const AdminDashboard = () => {
   const { user, token, activeBlock, logout } = useAuth();
@@ -351,6 +353,29 @@ export const AdminDashboard = () => {
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+            </button>
+
+            {/* Classes & Student Excel Import Tab */}
+            <button
+              onClick={() => {
+                sfx.playClick();
+                setActiveTab('classes');
+              }}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
+                activeTab === 'classes'
+                  ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/40 shadow-neon-emerald/20'
+                  : isAmoled
+                  ? 'text-slate-300 hover:bg-white/5 border border-transparent'
+                  : 'text-slate-700 hover:bg-slate-100 border border-transparent'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <GraduationCap className="w-4 h-4 text-emerald-400" />
+                <span>Classes & Students</span>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
+                EXCEL
               </span>
             </button>
 
@@ -1004,6 +1029,9 @@ export const AdminDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* VIEW 4: CLASS MANAGEMENT & STUDENT EXCEL IMPORTER */}
+          {activeTab === 'classes' && <ClassManagement />}
         </main>
       </div>
     </div>
